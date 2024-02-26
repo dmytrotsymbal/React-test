@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getEvents } from "../../services/ApiService";
 import CustomLoader from "../ui/CustomLoader";
+import EmptyListBlock from "../ui/EmptyListBlock";
 import {
   Table,
   TableHead,
@@ -58,35 +59,43 @@ const EventsTable = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {events.map((event, index) => (
-                <TableRow key={index}>
-                  <TableCell align="center">{event.eventId}</TableCell>
-                  <TableCell align="center">{event.employeeId}</TableCell>
-                  <TableCell align="center">{event.roomId}</TableCell>
-                  <TableCell align="center">{event.eventType}</TableCell>
-                  {event.accessDenied ? (
-                    <TableCell align="center">Дозволено</TableCell>
-                  ) : (
-                    <TableCell
-                      align="center"
-                      sx={{ color: "red", fontWeight: "bold" }}
-                    >
-                      Заборонено
-                    </TableCell>
-                  )}
-
-                  <TableCell align="center">
-                    {new Date(event.eventTimestamp).toLocaleString("uk-UA", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                    })}
+              {!events ? (
+                <TableRow>
+                  <TableCell colSpan={6}>
+                    <EmptyListBlock />
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                events.map((event, index) => (
+                  <TableRow key={index}>
+                    <TableCell align="center">{event.eventId}</TableCell>
+                    <TableCell align="center">{event.employeeId}</TableCell>
+                    <TableCell align="center">{event.roomId}</TableCell>
+                    <TableCell align="center">{event.eventType}</TableCell>
+                    {event.accessDenied ? (
+                      <TableCell align="center">Дозволено</TableCell>
+                    ) : (
+                      <TableCell
+                        align="center"
+                        sx={{ color: "red", fontWeight: "bold" }}
+                      >
+                        Заборонено
+                      </TableCell>
+                    )}
+
+                    <TableCell align="center">
+                      {new Date(event.eventTimestamp).toLocaleString("uk-UA", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                      })}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </TableContainer>

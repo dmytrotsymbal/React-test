@@ -13,6 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CustomLoader from "../ui/CustomLoader";
 import ConfirmModal from "../ui/modals/ConfirmModal";
 import { Link } from "react-router-dom";
+import EmptyListBlock from "../ui/EmptyListBlock";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
@@ -84,9 +85,11 @@ const EmployeeList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {employees.length === 0 ? (
+              {!employees ? (
                 <TableRow>
-                  <TableCell colSpan={3}>No employees found.</TableCell>
+                  <TableCell colSpan={5}>
+                    <EmptyListBlock />
+                  </TableCell>
                 </TableRow>
               ) : (
                 employees.map((employee) => (
