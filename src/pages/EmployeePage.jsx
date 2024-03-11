@@ -12,6 +12,7 @@ const EmployeePage = () => {
       <br />
       <br />
       <EmployeeList />
+      <br />
     </>
   );
 };

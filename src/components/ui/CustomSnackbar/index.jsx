@@ -9,7 +9,7 @@ const CustomSnackbar = ({ open, handleClose, message }) => {
         autoHideDuration={4000}
         onClose={handleClose}
         sx={{
-          marginTop: "60px",
+          marginTop: "140px",
         }}
         TransitionComponent={Slide}
         TransitionProps={{ direction: "left" }}

@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { getEmployees, deleteEmployee } from "../../services/ApiService";
+import {
+  getEmployees,
+  deleteEmployee,
+  searchEmployees,
+} from "../../services/ApiService";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -13,6 +17,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CustomLoader from "../ui/CustomLoader";
 import ConfirmModal from "../ui/modals/ConfirmModal";
 import { Link } from "react-router-dom";
+import SearchComponent from "./SearchComponent";
 import EmptyListBlock from "../ui/EmptyListBlock";
 
 const EmployeeList = () => {
@@ -59,6 +64,31 @@ const EmployeeList = () => {
     setIsModalOpen(true); // Открываем модальное окно
   };
 
+  //=====================================================
+
+  const handleSearch = async (name) => {
+    try {
+      const data = await searchEmployees(name);
+      setEmployees(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error searching for employees:", error);
+      setLoading(false);
+    }
+  };
+
+  // Use the getEmployees function when the reset button is clicked
+  const handleReset = async () => {
+    try {
+      const data = await getEmployees();
+      setEmployees(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching all employees:", error);
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       {loading ? (
@@ -73,61 +103,60 @@ const EmployeeList = () => {
           <CustomLoader />
         </div>
       ) : (
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell align="center">Employee ID</TableCell>
-                <TableCell align="center">Name</TableCell>
-                <TableCell align="center">Position</TableCell>
-                <TableCell align="center">Department</TableCell>
-                <TableCell align="center">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {!employees ? (
+        <>
+          <SearchComponent onSearch={handleSearch} onReset={handleReset} />
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
                 <TableRow>
-                  <TableCell colSpan={5}>
-                    <EmptyListBlock />
-                  </TableCell>
+                  <TableCell align="center">Employee ID</TableCell>
+                  <TableCell align="center">Name</TableCell>
+                  <TableCell align="center">Position</TableCell>
+                  <TableCell align="center">Department</TableCell>
+                  <TableCell align="center">Actions</TableCell>
                 </TableRow>
-              ) : (
-                employees.map((employee) => (
-                  <TableRow
-                    key={employee.employeeId}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell align="center" component="th" scope="row">
-                      {employee.employeeId}
-                    </TableCell>
-                    <TableCell align="center">{employee.name}</TableCell>
-                    <TableCell align="center">{employee.position}</TableCell>
-                    <TableCell align="center">
-                      {employee.departmentId === 1
-                        ? "1 (IT)"
-                        : employee.departmentId === 2
-                        ? "2 (Маркетинг)"
-                        : employee.departmentId === 3
-                        ? "3 (Фананси)"
-                        : "4 (Охорона)"}
-                    </TableCell>
-
-                    <TableCell align="center">
-                      <Link to={`/edit/${employee.employeeId}`}>
-                        <IconButton>
-                          <EditIcon />
+              </TableHead>
+              <TableBody>
+                {Array.isArray(employees) && employees.length > 0 ? (
+                  employees.map((employee) => (
+                    <TableRow key={employee.employeeId}>
+                      <TableCell align="center" component="th" scope="row">
+                        {employee.employeeId}
+                      </TableCell>
+                      <TableCell align="center">{employee.name}</TableCell>
+                      <TableCell align="center">{employee.position}</TableCell>
+                      <TableCell align="center">
+                        {employee.departmentId === 1
+                          ? "1 (IT)"
+                          : employee.departmentId === 2
+                          ? "2 (Маркетинг)"
+                          : employee.departmentId === 3
+                          ? "3 (Фінанси)"
+                          : "4 (Охорона)"}
+                      </TableCell>
+                      <TableCell align="center">
+                        <Link to={`/edit/${employee.employeeId}`}>
+                          <IconButton>
+                            <EditIcon />
+                          </IconButton>
+                        </Link>
+                        <IconButton onClick={() => handleOpenModal(employee)}>
+                          <DeleteIcon />
                         </IconButton>
-                      </Link>
-                      <IconButton onClick={() => handleOpenModal(employee)}>
-                        <DeleteIcon />
-                      </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5}>
+                      <EmptyListBlock />
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
       )}
 
       <ConfirmModal

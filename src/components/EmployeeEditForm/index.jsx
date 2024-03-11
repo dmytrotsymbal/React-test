@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useParams, Link } from "react-router-dom";
 import { TextField, Button, Typography, Box } from "@mui/material";
+import { Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 import { getEmployee, putEmployee } from "../../services/ApiService";
 import CustomSnackbar from "../ui/CustomSnackbar";
 
@@ -109,7 +110,7 @@ const EmployeeEditForm = () => {
           helperText={formik.touched.position && formik.errors.position}
           margin="normal"
         />
-        <TextField
+        {/* <TextField
           label="Department"
           name="departmentId"
           value={formik.values.departmentId}
@@ -119,7 +120,31 @@ const EmployeeEditForm = () => {
           }
           helperText={formik.touched.departmentId && formik.errors.departmentId}
           margin="normal"
-        />
+        /> */}
+
+        <FormControl margin="normal">
+          <InputLabel id="departmentId-label">Department</InputLabel>
+          <Select
+            labelId="departmentId-label"
+            label="Department"
+            name="departmentId"
+            value={formik.values.departmentId}
+            onChange={formik.handleChange}
+            error={
+              formik.touched.departmentId && Boolean(formik.errors.departmentId)
+            }
+          >
+            <MenuItem value={1}>1 (IT)</MenuItem>
+            <MenuItem value={2}>2 (Маркетинг)</MenuItem>
+            <MenuItem value={3}>3 (Фінанси)</MenuItem>
+            <MenuItem value={4}>4 (Охорона)</MenuItem>
+          </Select>
+          {formik.touched.departmentId && formik.errors.departmentId && (
+            <Typography color="error" variant="caption">
+              {formik.errors.departmentId}
+            </Typography>
+          )}
+        </FormControl>
         <Button
           sx={{ marginTop: "20px" }}
           color="success"

@@ -27,6 +27,27 @@ export const getEmployee = async (id) => {
   }
 };
 
+export const searchEmployees = async (name) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/employees/search?name=${name}`
+    );
+    if (!response.ok) {
+      throw new Error(
+        `Network response was not ok, status: ${response.status}`
+      );
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(
+      "There was a problem with the fetch operation during search:",
+      error
+    );
+    throw error;
+  }
+};
+
 export const createEmployee = async (employeeData) => {
   // получает данные с формы
   try {
