@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   getEmployees,
+  getEmployeesCount,
   deleteEmployee,
   searchEmployees,
 } from "../../services/ApiService";
@@ -10,6 +11,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import { Pagination } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
@@ -24,10 +26,16 @@ const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true); // Add loading state
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const pageSize = 10;
+
+  const [showPagination, setShowPagination] = useState(true);
+
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const data = await getEmployees();
+        const data = await getEmployees(currentPage, pageSize);
         setEmployees(data);
         setLoading(false);
       } catch (error) {
@@ -37,6 +45,19 @@ const EmployeeList = () => {
     };
 
     fetchEmployees();
+  }, [currentPage]);
+
+  useEffect(() => {
+    const fetchTotalCount = async () => {
+      try {
+        const totalCount = await getEmployeesCount();
+        setTotalPages(Math.ceil(totalCount / pageSize));
+      } catch (error) {
+        console.error("Error fetching total events count:", error);
+      }
+    };
+
+    fetchTotalCount();
   }, []);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,29 +85,38 @@ const EmployeeList = () => {
     setIsModalOpen(true); // Открываем модальное окно
   };
 
-  //=====================================================
+  //===========================================================================
 
   const handleSearch = async (name) => {
     try {
       const data = await searchEmployees(name);
       setEmployees(data);
       setLoading(false);
+      setShowPagination(false);
     } catch (error) {
       console.error("Error searching for employees:", error);
       setLoading(false);
     }
   };
 
-  // Use the getEmployees function when the reset button is clicked
   const handleReset = async () => {
     try {
-      const data = await getEmployees();
+      const data = await getEmployees(currentPage, pageSize);
       setEmployees(data);
       setLoading(false);
+      setCurrentPage(1);
+      setShowPagination(true);
     } catch (error) {
       console.error("Error fetching all employees:", error);
       setLoading(false);
     }
+  };
+
+  //===========================================================================
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    setLoading(true);
   };
 
   return (
@@ -156,6 +186,20 @@ const EmployeeList = () => {
               </TableBody>
             </Table>
           </TableContainer>
+
+          {showPagination && (
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+              sx={{
+                marginTop: "16px",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            />
+          )}
         </>
       )}
 

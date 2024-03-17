@@ -1,12 +1,17 @@
 const API_BASE_URL = "https://localhost:7091/api"; // Базовый URL для всех API-запросов
 
-export const getEmployees = async () => {
+//=======================================================================
+
+export const getEmployees = async (pageNumber, pageSize) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/employees`); // базовий ЮРЛ/название контроллера
+    const response = await fetch(
+      `${API_BASE_URL}/employees?pageNumber=${pageNumber}&pageSize=${pageSize}`
+    );
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
-    return await response.json(); // Возвращает список сотрудников
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("There was a problem with the fetch operation:", error);
   }
@@ -107,12 +112,29 @@ export const deleteEmployee = async (id) => {
   }
 };
 
+export const getEmployeesCount = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/employees/count`);
+    if (!response.ok) {
+      throw new Error(
+        `Network response was not ok, status: ${response.status}`
+      );
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("There was a problem with the fetch operation:", error);
+  }
+};
+
 //=======================================================================
 
-// функция для получения событий
-export const getEvents = async () => {
+// функция для получения всех событий
+export const getEvents = async (pageNumber, pageSize) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/events`); // базовый ЮРЛ/название контроллера для событий
+    const response = await fetch(
+      `${API_BASE_URL}/events?pageNumber=${pageNumber}&pageSize=${pageSize}`
+    ); // базовый ЮРЛ/название контроллера для событий
     if (!response.ok) {
       throw new Error(
         `Network response was not ok, status: ${response.status}`
@@ -120,6 +142,23 @@ export const getEvents = async () => {
     }
     const data = await response.json();
     console.log("Data received from getEvents:", data);
+    return data;
+  } catch (error) {
+    console.error("There was a problem with the fetch operation:", error);
+    throw error;
+  }
+};
+
+export const getEventsCount = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/events/count`); // базовый ЮРЛ/название контроллера для событий
+    if (!response.ok) {
+      throw new Error(
+        `Network response was not ok, status: ${response.status}`
+      );
+    }
+    const data = await response.json();
+    console.log("Data received from getEventsCount:", data);
     return data;
   } catch (error) {
     console.error("There was a problem with the fetch operation:", error);

@@ -5,6 +5,7 @@ const EventsPage = () => {
     <>
       <br />
       <EventsTable />
+      <br />
     </>
   );
 };
