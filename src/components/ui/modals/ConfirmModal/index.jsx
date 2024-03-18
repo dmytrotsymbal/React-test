@@ -21,8 +21,15 @@ const ConfirmModal = ({ open, handleClose, handleDelete, employeeName }) => {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Ні</Button>
-        <Button onClick={handleDelete} autoFocus>
+        <Button variant="outlined" color="secondary" onClick={handleClose}>
+          Ні
+        </Button>
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={handleDelete}
+          autoFocus
+        >
           Так
         </Button>
       </DialogActions>

@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { getEvents, getEventsCount } from "../../services/ApiService";
 import CustomLoader from "../ui/CustomLoader";
-import EmptyListBlock from "../ui/EmptyListBlock";
+import ErrorBlock from "../ui/ErrorBlock";
 
 const EventsTable = () => {
   const [events, setEvents] = useState([]);
@@ -86,7 +86,7 @@ const EventsTable = () => {
                 {!events ? (
                   <TableRow>
                     <TableCell colSpan={6}>
-                      <EmptyListBlock />
+                      <ErrorBlock />
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -140,7 +140,7 @@ const EventsTable = () => {
           />
         </>
       ) : (
-        <EmptyListBlock />
+        <ErrorBlock />
       )}
     </>
   );

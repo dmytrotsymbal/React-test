@@ -21,7 +21,8 @@ import CustomLoader from "../ui/CustomLoader";
 import ConfirmModal from "../ui/modals/ConfirmModal";
 import { Link } from "react-router-dom";
 import SearchComponent from "./SearchComponent";
-import EmptyListBlock from "../ui/EmptyListBlock";
+import ErrorBlock from "../ui/ErrorBlock";
+import EmployeeNotFound from "../ui/EmployeeNotFound";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
@@ -88,10 +89,18 @@ const EmployeeList = () => {
 
   //===========================================================================
 
+  const [errorMessage, setErrorMessage] = useState(""); // помилка про notFound
+
   const handleSearch = async (name) => {
     try {
       const data = await searchEmployees(name);
-      setEmployees(data);
+      if (data.length === 0) {
+        setErrorMessage(`Працівника з іменем ${name} не знайдено.`);
+        setEmployees([]);
+      } else {
+        setErrorMessage("");
+        setEmployees(data);
+      }
       setLoading(false);
       setShowPagination(false);
     } catch (error) {
@@ -195,7 +204,11 @@ const EmployeeList = () => {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={5}>
-                      <EmptyListBlock />
+                      {errorMessage ? (
+                        <EmployeeNotFound errorMessage={errorMessage} />
+                      ) : (
+                        <ErrorBlock />
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

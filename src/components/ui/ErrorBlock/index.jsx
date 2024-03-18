@@ -2,7 +2,7 @@ import React from "react";
 import { Typography, Button, Paper } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
-const EmptyListBlock = () => {
+const ErrorBlock = () => {
   const reloadPage = () => {
     window.location.reload();
   };
@@ -34,4 +34,4 @@ const EmptyListBlock = () => {
   );
 };
 
-export default EmptyListBlock;
+export default ErrorBlock;
