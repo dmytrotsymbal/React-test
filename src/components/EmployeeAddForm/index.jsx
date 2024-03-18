@@ -1,26 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
-import { createEmployee } from "../../services/ApiService";
+import { createEmployee, getDepartments } from "../../services/ApiService";
 import { Link } from "react-router-dom";
 import CustomSnackbar from "../ui/CustomSnackbar";
 
-const validationSchema = Yup.object({
-  name: Yup.string()
-    .matches(/^[A-Za-zА-Яа-яЁёІіЇїЄєҐґ\s]*$/, "Ім'я має містити лише літери")
-    .required("Ім'я є обов'язковим"),
-  position: Yup.string()
-    .matches(/^[A-Za-zА-Яа-яЁёІіЇїЄєҐґ\s]*$/, "Ім'я має містити лише літери")
-    .required("Посада є обов'язковою"),
-  departmentId: Yup.number()
-    .typeError("Номер відділу є обов'язковим")
-    .required("Номер відділу є обов'язковим")
-    .max(4, "Всього 4 відділи"),
-});
-
 const EmployeeAddForm = () => {
+  //==================FETCH DEPARTMENTS==================
+  const [departments, setDepartments] = useState([]);
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const data = await getDepartments();
+        setDepartments(data);
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
+    };
+    fetchDepartments();
+  }, []);
+
+  //====================================================
+
+  const validationSchema = Yup.object({
+    name: Yup.string()
+      .matches(/^[A-Za-zА-Яа-яЁёІіЇїЄєҐґ\s]*$/, "Ім'я має містити лише літери")
+      .required("Ім'я є обов'язковим"),
+    position: Yup.string()
+      .matches(/^[A-Za-zА-Яа-яЁёІіЇїЄєҐґ\s]*$/, "Ім'я має містити лише літери")
+      .required("Посада є обов'язковою"),
+    departmentId: Yup.number()
+      .typeError("Номер відділу є обов'язковим")
+      .required("Номер відділу є обов'язковим")
+      .max(departments.length, "Всього 4 відділи"),
+  });
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -109,10 +126,14 @@ const EmployeeAddForm = () => {
               formik.touched.departmentId && Boolean(formik.errors.departmentId)
             }
           >
-            <MenuItem value={1}>1 (IT)</MenuItem>
-            <MenuItem value={2}>2 (Маркетинг)</MenuItem>
-            <MenuItem value={3}>3 (Фінанси)</MenuItem>
-            <MenuItem value={4}>4 (Охорона)</MenuItem>
+            {departments.map((department) => (
+              <MenuItem
+                key={department.departmentId}
+                value={department.departmentId}
+              >
+                {department.name}
+              </MenuItem>
+            ))}
           </Select>
           {formik.touched.departmentId && formik.errors.departmentId && (
             <Typography color="error" variant="caption" display="block">

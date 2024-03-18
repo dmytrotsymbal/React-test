@@ -4,6 +4,7 @@ import {
   getEmployeesCount,
   deleteEmployee,
   searchEmployees,
+  getDepartments,
 } from "../../services/ApiService";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -114,10 +115,26 @@ const EmployeeList = () => {
 
   //===========================================================================
 
-  const handlePageChange = (page) => {
+  const handlePageChange = (event, page) => {
     setCurrentPage(page);
     setLoading(true);
   };
+
+  //===========================================================================
+
+  const [departments, setDepartments] = useState([]);
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const data = await getDepartments();
+        setDepartments(data);
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
+    };
+    fetchDepartments();
+  }, []);
 
   return (
     <>
@@ -156,13 +173,12 @@ const EmployeeList = () => {
                       <TableCell align="center">{employee.name}</TableCell>
                       <TableCell align="center">{employee.position}</TableCell>
                       <TableCell align="center">
-                        {employee.departmentId === 1
-                          ? "1 (IT)"
-                          : employee.departmentId === 2
-                          ? "2 (Маркетинг)"
-                          : employee.departmentId === 3
-                          ? "3 (Фінанси)"
-                          : "4 (Охорона)"}
+                        {
+                          departments.find(
+                            (department) =>
+                              department.departmentId === employee.departmentId
+                          )?.name
+                        }
                       </TableCell>
                       <TableCell align="center">
                         <Link to={`/edit/${employee.employeeId}`}>

@@ -4,11 +4,32 @@ import * as Yup from "yup";
 import { useParams, Link } from "react-router-dom";
 import { TextField, Button, Typography, Box } from "@mui/material";
 import { Select, MenuItem, InputLabel, FormControl } from "@mui/material";
-import { getEmployee, putEmployee } from "../../services/ApiService";
+import {
+  getEmployee,
+  putEmployee,
+  getDepartments,
+} from "../../services/ApiService";
 import CustomSnackbar from "../ui/CustomSnackbar";
 
 const EmployeeEditForm = () => {
   const { id } = useParams(); // получаем ID из URL
+
+  //==================FETCH DEPARTMENTS==================
+  const [departments, setDepartments] = useState([]);
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const data = await getDepartments();
+        setDepartments(data);
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
+    };
+    fetchDepartments();
+  }, []);
+
+  //====================================================
 
   const validationSchema = Yup.object({
     name: Yup.string()
@@ -23,7 +44,7 @@ const EmployeeEditForm = () => {
     departmentId: Yup.number()
       .required("ID відділу обов'язковий")
       .typeError("ID відділу має бути числом")
-      .max(4, "Всього 4 відділи"),
+      .max(departments.length, "Всього 4 відділи"),
   });
 
   const formik = useFormik({
@@ -134,10 +155,14 @@ const EmployeeEditForm = () => {
               formik.touched.departmentId && Boolean(formik.errors.departmentId)
             }
           >
-            <MenuItem value={1}>1 (IT)</MenuItem>
-            <MenuItem value={2}>2 (Маркетинг)</MenuItem>
-            <MenuItem value={3}>3 (Фінанси)</MenuItem>
-            <MenuItem value={4}>4 (Охорона)</MenuItem>
+            {departments.map((department) => (
+              <MenuItem
+                key={department.departmentId}
+                value={department.departmentId}
+              >
+                {department.name}
+              </MenuItem>
+            ))}
           </Select>
           {formik.touched.departmentId && formik.errors.departmentId && (
             <Typography color="error" variant="caption">
